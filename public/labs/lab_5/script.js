@@ -18,11 +18,7 @@ async function dataHandler(mapObjectFromFunction) {
   // use your assignment 1 data handling code here
   // and target mapObjectFromFunction to attach markers
 
-}
 
-async function windowActions() {
-  const map = mapInit();
-  await dataHandler(map);
 
   const form = document.querySelector('#search-form');
   const search = document.querySelector('#search');
@@ -33,19 +29,29 @@ async function windowActions() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const filtered = data.filter((record) => record.zip.include(search.value) && record.geocoded_column_1);
+    console.log('form submitted');
+    const filtered = data.filter((record) => record.zip.includes(search.value) && record.geocoded_column_1);
+    console.table(filtered);
+
     filtered.forEach((item) => {
       const longLat = item.geocoded_column_1.coordinates;
       console.log('markerLongLat', longLat[0], longLat[1]);
-      const marker = L.marker([longLat[1], longLat[0]]).addTo(mapFromMapFunction);
+      const marker = L.marker([longLat[1], longLat[0]]).addTo(mapObjectFromFunction);
 
       const appendItem = document.createElement('li');
       appendItem.classList.add('block');
       appendItem.classList.add('list-item');
       appendItem.innerHTML = `<div class="list-header is-size-5">${item.name}</div><address class="is-size-6">${item.address_line_1}</address>`;
-      targetList.appeend(appendItem);
+      targetList.append(appendItem);
     });
   });
+}
+
+
+
+async function windowActions() {
+  const map = mapInit();
+  await dataHandler(map);
 }
 
 window.onload = windowActions;
