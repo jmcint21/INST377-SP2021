@@ -18,43 +18,36 @@ console.log('mymap', mymap);
 async function dataHandler(mapObjectFromFunction) {
   // use your assignment 1 data handling code here
   // and target mapObjectFromFunction to attach markers
-  const endpoint = 'https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json';
-const locations = [];
 
-fetch(endpoint)
-    .then(blob => blob.json())
-    .then(data => locations.push(...data))
-
-function findMatches(word) {
-  return locations.filter(location =>
-    location.name.toLowerCase().indexOf(word) > -1);
-}
-
-function displayMatches() {
-  const matchArray = findMatches(searchInput.value);
-  document.querySelector('.suggestions').innerHTML = matchArray.map(location => {
-    return `
-        <li class="bgcolor">
-            <div class="name">${location.name}</div>
-            <div class="category">${location.category}</div>
-            <div class="address">${location.address_line_1}</div>
-            <div class="city">${location.city}</div>
-            <div class="zip">${location.zip}</div>
-            <div class="space"> </div>
-        </li>
-        `;
-  }).join('');
-}
-
-const searchInput = document.querySelector('.search');
-const suggestions = document.querySelector('.suggestions');
-searchInput.addEventListener('change', displayMatches);
-searchInput.addEventListener('keyup', displayMatches);
 }
 
 async function windowActions() {
   const map = mapInit();
   await dataHandler(map);
+
+  const form = document.querySelector('#search-form');
+  const search = document.querySelector('#search');
+  const targetList = document.querySelector('.target-list');
+  const replyMessage = document.querySelector('.reply-message');
+
+  const request = await fetch('/api');
+  const data = await request.json();
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const filtered = data.filter((record) => record.zip.include(search.value) && record.geocoded_column_1);
+    filtered.forEach((item) => {
+      const longLat = item.geocoded_column_1.coordinates;
+      console.log('markerLongLat', longLat[0], longLat[1]);
+      const marker = L.marker([longLat[1], longLat[0]]).addTo(mapFromMapFunction);
+
+      const appendItem = document.createElement('li');
+      appendItem.classList.add('block');
+      appendItem.classList.add('list-item');
+      appendItem.innerHTML = `<div class="list-header is-size-5">${item.name}</div><address class="is-size-6">${item.address_line_1}</address>`;
+      targetList.appeend(appendItem);
+    });
+  });
 }
 
 window.onload = windowActions;
