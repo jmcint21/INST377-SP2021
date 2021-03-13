@@ -8,11 +8,10 @@ function mapInit() {
     tileSize: 512,
     zoomOffset: -1,
     accessToken: 'pk.eyJ1IjoiZXVyenVhIiwiYSI6ImNrbTZuNWVtbTBxNG4yb281ejFwbmlwMGoifQ.fVeYUIJ-N3W5yEgcphjsxg'
-}).addTo(mymap);
-console.log('mymap', mymap);
+  }).addTo(mymap);
+  console.log('mymap', mymap);
   return mymap;
   // follow the Leaflet Getting Started tutorial here
-  return map;
 }
 
 async function dataHandler(mapObjectFromFunction) {
@@ -28,7 +27,6 @@ async function windowActions() {
   const form = document.querySelector('#search-form');
   const search = document.querySelector('#search');
   const targetList = document.querySelector('.target-list');
-  const replyMessage = document.querySelector('.reply-message');
 
   const request = await fetch('/api');
   const data = await request.json();
